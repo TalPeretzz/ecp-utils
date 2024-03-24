@@ -25,7 +25,7 @@ echo "const fs = require('fs');
 let package = require('./package.json');
 package.name = '$FULL_PACKAGE_NAME';
 package.version = '0.0.0';
-package.repository = {type: 'git', url: 'https://github.com/elementor/elementor-lerna-template.git'};
+package.repository = {type: 'git', url: 'https://github.com/elementor/ecp-utils.git'};
 package.publishConfig = {registry: 'https://npm.pkg.github.com/elementor'};
 fs.writeFileSync('./package.json', JSON.stringify(package, null, 2));" > updatePackage.js
 

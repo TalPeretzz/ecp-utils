@@ -24,10 +24,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/elementor/elementor-lerna-template.git"
+    "url": "https://github.com/elementor/ecp-utils.git"
   },
   "bugs": {
-    "url": "https://github.com/elementor/elementor-lerna-template/issues"
+    "url": "https://github.com/elementor/ecp-utils/issues"
   },
   "lint-staged": {
     "*.ts": [

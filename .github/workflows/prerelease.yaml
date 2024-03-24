@@ -1,0 +1,81 @@
+name: PreRelease
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_publish:
+        description: 'Force publish even if no changes?'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  actions: read
+  contents: read
+  pages: write
+  id-token: write
+
+env: 
+  FORCE: ${{ github.event.inputs.force_publish }}
+
+jobs:  
+  define-vars:
+    runs-on: ubuntu-latest
+    outputs:
+      FORCE: ${{ steps.variables.outputs.FORCE }}
+    steps:
+    - name: force
+      id: variables
+      run: echo "FORCE=${{ env.FORCE }}" >> $GITHUB_OUTPUT
+
+  pre-job:
+    uses: elementor/elementor-cloud-github-actions/.github/workflows/microservice-pre-job.yaml@master
+    secrets: inherit
+
+  affected-packages:
+    needs: define-vars
+    uses: elementor/elementor-cloud-github-actions/.github/workflows/monorepo-affected-packages.yaml@master
+    with:
+      event: 'pullrequest'
+      force_publish: ${{ needs.define-vars.outputs.FORCE }}
+    secrets: inherit
+
+  prerelease:
+    needs: ["pre-job", "affected-packages"]
+    if: fromJson(needs.affected-packages.outputs.affected_projects).packages[0] != null
+    strategy:
+      matrix:
+        lib: ${{ fromJson(needs.affected-packages.outputs.affected_projects).packages }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.CLOUD_DEVOPS_TOKEN }}
+
+    - name: Install Node.js 18.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+        registry-url: https://npm.pkg.github.com/@elementor
+        cache: npm
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.CLOUD_DEVOPS_TOKEN }}
+
+    - name: Install Deps
+      run: npm install
+
+    - name: Run Build
+      run: npm run build
+    
+    - name: Publishing ${{ matrix.lib }}      
+      run: |       
+        PACKAGE=${{ matrix.lib }}
+        export PACKAGE=${PACKAGE#@elementor}
+        cd packages/${PACKAGE}/dist
+        npm version ${{ needs.pre-job.outputs.MANUAL_VERSION }}       
+        npm publish
+      env:
+        token: ${{ secrets.CLOUD_DEVOPS_TOKEN }}
+        NODE_AUTH_TOKEN: ${{ secrets.CLOUD_DEVOPS_TOKEN }}

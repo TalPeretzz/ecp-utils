@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "version": "fixed",
+  "npmClient": "npm",
+  "command": {
+    "publish": {
+      "registry": "https://npm.pkg.github.com/@elementor"
+    }
+  }
+}

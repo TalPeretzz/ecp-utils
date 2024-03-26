@@ -1,0 +1,88 @@
+{
+  "name": "@elementor/ecp-utils-axios",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "@nestjs/common": "*",
+    "@nestjs/config": "*",
+    "@nestjs/core": "^10.2.10",
+    "@nestjs/platform-fastify": "^10.3.0",
+    "@nestjs/testing": "^10.2.10",
+    "@types/jest": "^29.5.10",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "axios": "^1.6.2",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "jest": "^29.7.0",
+    "nock": "^13.4.0",
+    "prettier": "^3.1.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^5.0.5",
+    "rxjs": "^7.8.1",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.2"
+  },
+  "peerDependencies": {
+    "@nestjs/axios": "^3.0.1",
+    "@nestjs/common": "^10.2.10",
+    "@nestjs/config": "^3.1.1",
+    "axios": "^1.6.2"
+  },
+  "scripts": {
+    "build": "rimraf -rf dist && tsc -p tsconfig.build.json",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"{src,test}/**/*.ts\" --fix",
+    "lint:ci": "eslint \"{src,test}/**/*.ts\"",
+    "test": "jest --coverage --detectOpenHandles"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elementor/ecp-zuora-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/elementor/ecp-zuora-client/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@elementor"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "<rootDir>/src/**/*.ts"
+    ],
+    "coverageDirectory": "<rootDir>/coverage",
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/src/$1"
+    },
+    "coverageThreshold": {
+      "global": {
+        "lines": 50
+      }
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix"
+    ],
+    "*.js": "eslint --cache --fix"
+  },
+  "homepage": "https://github.com/elementor/ecp-zuora-client#readme",
+  "version": "1.0.0",
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

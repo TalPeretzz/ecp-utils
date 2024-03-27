@@ -8,14 +8,16 @@ then
   echo "No package name supplied [Usage: npm run new-package <package-name>]"
   exit 1
 fi
+#set package prefix
+PACKAGE_PREFIX="ecp-utils-"
 
 # Set the full package name
-FULL_PACKAGE_NAME="@elementor/$PACKAGE_NAME"
+FULL_PACKAGE_NAME="@elementor/$PACKAGE_PREFIX$PACKAGE_NAME"
 
 # Create a new directory for the package
 cd packages
-mkdir $PACKAGE_NAME
-cd $PACKAGE_NAME
+mkdir $PACKAGE_PREFIX$PACKAGE_NAME
+cd $PACKAGE_PREFIX$PACKAGE_NAME
 
 # Initialize a new npm package
 npm init -y
@@ -36,7 +38,8 @@ node updatePackage.js
 rm updatePackage.js
 
 mkdir src
-echo "console.log('Hello - $PACKAGE_NAME');" > src/index.ts
+echo "console.log('Hello - $PACKAGE_PREFIX$PACKAGE_NAME');" > src/index.ts
 cp ../../tsconfig.json .
 cp ../../tsconfig.build.json .
 cp ../../.eslintrc.js .
+cp ../../.gitignore .

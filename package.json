@@ -8,7 +8,8 @@
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "test": "lerna run test",
-    "libs": "ts-node ./scripts/affected.ts packages"
+    "libs": "ts-node ./scripts/affected.ts packages",
+    "new-package": "./create-new-package.sh $packagename"
   },   
   "dependencies": {},
   "devDependencies": {

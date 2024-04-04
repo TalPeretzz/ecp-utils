@@ -17,6 +17,7 @@ permissions:
 
 env: 
   FORCE: ${{ github.event.inputs.force_publish }}
+  NODE_AUTH_TOKEN: ${{ secrets.CLOUD_DEVOPS_TOKEN }}
 
 jobs:  
   define-vars:

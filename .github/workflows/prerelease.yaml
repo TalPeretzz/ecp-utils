@@ -37,7 +37,7 @@ jobs:
     needs: define-vars
     uses: elementor/elementor-cloud-github-actions/.github/workflows/monorepo-affected-packages.yaml@master
     with:
-      event: 'pullrequest'
+      event: 'push'
       force_publish: ${{ needs.define-vars.outputs.FORCE }}
     secrets: inherit
 

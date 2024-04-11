@@ -10,6 +10,7 @@ import { TRACE_ID_HEADER } from './logger.options';
 export class LoggerUtils {
   constructor(@Inject(LoggerModuleToken) public readonly options: LoggerOptionsType) {
     this.loggerCustomProps = this.loggerCustomProps.bind(this);
+    this.serializeRequest = this.serializeRequest.bind(this);
   }
 
   public transport(): pino.LoggerOptions['transport'] {
@@ -58,6 +59,12 @@ export class LoggerUtils {
     };
   }
 
+  public serializeResponse(res: pino.SerializedResponse) {
+    return {
+      statusCode: res.statusCode,
+    };
+  }
+
   public getClientIP(req: pino.SerializedRequest): string {
     const { headers, remoteAddress } = req;
     const cfConnectingIP = headers['cf-connecting-ip'];
@@ -65,12 +72,6 @@ export class LoggerUtils {
     const xForwardedFor = headers['x-forwarded-for'];
 
     return cfConnectingIP || xForwardedFor || xRealIP || remoteAddress;
-  }
-
-  public serializeResponse(res: pino.SerializedResponse) {
-    return {
-      statusCode: res.statusCode,
-    };
   }
 
   public loggerCustomMessage(req: IncomingMessage, res: ServerResponse): string {

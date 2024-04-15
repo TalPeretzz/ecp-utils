@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "lerna run build --since origin/master",
+    "build": "lerna run build",
     "test": "lerna run test",
     "libs": "ts-node ./scripts/affected.ts packages",
     "new-package": "./create-new-package.sh $packagename"

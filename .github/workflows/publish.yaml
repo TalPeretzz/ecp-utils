@@ -16,9 +16,10 @@ jobs:
     secrets: inherit
 
   affected-packages:
-    uses: elementor/elementor-cloud-github-actions/.github/workflows/monorepo-affected-packages.yaml@master
+    uses: elementor/elementor-cloud-github-actions/.github/workflows/monorepo-affected-packages.yaml@fix-affected
     with:
       event: 'release'
+      workflow_id: Publish
     secrets: inherit
 
   publish:

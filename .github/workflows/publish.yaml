@@ -19,12 +19,12 @@ jobs:
     uses: elementor/elementor-cloud-github-actions/.github/workflows/monorepo-affected-packages.yaml@fix-affected
     with:
       event: 'release'
-      workflow_id: Publish
+      workflow_id: publish.yaml
     secrets: inherit
 
   publish:
     needs: ["pre-job", "affected-packages"]
-    name: publish.yaml
+    name: Publish
     if: fromJson(needs.affected-packages.outputs.affected_projects).packages[0] != null
     strategy:
       matrix:

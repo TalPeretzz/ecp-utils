@@ -3,6 +3,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "devDependencies": {
+    "@elementor/example-schema": "^0.0.0-master-b894fd0",
+    "@google-cloud/pubsub": "^4.3.3",
     "@nestjs/common": "*",
     "@nestjs/config": "*",
     "@nestjs/core": "^10.2.10",
@@ -10,6 +12,7 @@
     "@nestjs/testing": "^10.2.10",
     "@types/jest": "^29.5.10",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "avsc": "^5.7.7",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.0.1",
@@ -18,16 +21,14 @@
     "prettier": "^3.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.5",
+    "testcontainers": "^10.3.2",
     "ts-jest": "^29.1.1",
-    "typescript": "^5.3.2",
-    "avsc": "^5.7.7",
-    "@google-cloud/pubsub": "^4.3.3",
-    "testcontainers": "^10.3.2"
+    "typescript": "^5.3.2"
   },
   "peerDependencies": {
+    "@google-cloud/pubsub": "^4.3.3",
     "@nestjs/common": "^10.2.10",
     "@nestjs/config": "^3.1.1",
-    "@google-cloud/pubsub": "^4.3.3",
     "avsc": "^5.7.7"
   },
   "scripts": {

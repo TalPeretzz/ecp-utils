@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TestController } from './test.controller';
-import { AppController } from './app.controller';
 import { PubSubModule } from '../../src';
+import { TestController } from './app-with-no-schema-test.controller';
+import { AppController } from './app-with-no-schema.controller';
 
 @Module({
   imports: [
@@ -14,8 +14,8 @@ import { PubSubModule } from '../../src';
           projectId: config.get('PUBSUB_PROJECT_ID', { infer: true }) || '',
           apiEndpoint: config.get('PUBSUB_SERVER_ENDPOINT', { infer: true }),
           init: {
-            topic: 'topic',
-            subscription: 'subscription',
+            topic: 'topic-without-schema',
+            subscription: 'subscription-without-schema',
           },
         };
       },

@@ -1,5 +1,5 @@
+import { EventEnvelope, ExampleV1 } from '@elementor/example-schema';
 import { Controller, Get } from '@nestjs/common';
-import { EventEnvelope, PocV1 } from '@elementor/pubsub-avro-schema-poc';
 import { PubSubService } from '../../src';
 
 @Controller()
@@ -10,19 +10,25 @@ export class AppController {
   async getHello() {
     const event: EventEnvelope = {
       metadata: {
-        eventName: 'POC_CREATED',
+        eventName: 'CREATED',
         eventId: 'id',
+        eventSource: 'test',
+        timestamp: 1713195615942,
       },
-      poc: {
-        createdBy: 'createdBy',
-        id: '1',
-        name: 'name',
+      example: {
+        billingInfo: {
+          billingId: 'id',
+          billingName: 'name',
+        },
         description: 'description',
+        id: 'id',
+        name: 'name',
         status: 'status',
+        createdBy: 'createdBy',
       },
     };
 
-    await this.pubsubService.publishMessage('mytopic', event, PocV1.EventEnvelopeSchema);
+    await this.pubsubService.publishMessage('topic', event, ExampleV1.EventEnvelopeSchema);
 
     return { success: true };
   }

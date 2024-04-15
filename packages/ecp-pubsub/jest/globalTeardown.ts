@@ -5,8 +5,8 @@
 import { StartedTestContainer } from 'testcontainers';
 
 export = async function globalTeardown() {
-    // add global teardown logic here
+  // add global teardown logic here
 
-    const pubsub: StartedTestContainer = (global as Record<string, unknown>).__PUBSUBINSTANCE as StartedTestContainer;
-    await pubsub.stop();
+  const pubsub: StartedTestContainer = (global as Record<string, unknown>).__PUBSUBINSTANCE as StartedTestContainer;
+  await pubsub.stop();
 };

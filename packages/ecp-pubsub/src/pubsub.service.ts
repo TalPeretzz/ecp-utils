@@ -1,11 +1,11 @@
-import { Inject, Injectable, Logger, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { Message, PubSub, Subscription } from '@google-cloud/pubsub';
+import { Inject, Injectable, Logger, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
+import * as avsc from 'avsc';
 import { PUBSUB_CONTROLLER_KEY } from './pubsub-controller.decorator';
 import { HandlerConfig, PUBSUB_MESSAGE_HANDLER_KEY } from './pubsub-message-handler.decorator';
-import { PubSubModuleOptions } from './pubsub.module';
-import * as avsc from 'avsc';
 import { PUBSUB_MODULE_OPTIONS_TOKEN } from './pubsub.constants';
+import { PubSubModuleOptions } from './pubsub.module';
 
 @Injectable()
 export class PubSubService implements OnApplicationBootstrap, OnApplicationShutdown {
@@ -20,13 +20,26 @@ export class PubSubService implements OnApplicationBootstrap, OnApplicationShutd
     @Inject(PUBSUB_MODULE_OPTIONS_TOKEN) private readonly options: PubSubModuleOptions,
   ) {}
 
-  public async publishMessage(topicNameOrId: string, data: object, schema: string) {
+  public async publishMessage(
+    topicNameOrId: string,
+    data: unknown,
+    schema?: string,
+    attributes?: Record<string, string>,
+  ) {
     try {
       const topic = this.pubsub.topic(topicNameOrId);
-      const type = avsc.parse(schema) as avsc.Type;
-      const buffer = type.toBuffer(data);
 
-      return topic.publishMessage({ data: buffer });
+      if (schema) {
+        const type = avsc.parse(schema) as avsc.Type;
+        const buffer = type.toBuffer(data);
+
+        return topic.publishMessage({ data: buffer, attributes });
+      }
+
+      return topic.publishMessage({
+        data: Buffer.from(JSON.stringify(data)),
+        attributes,
+      });
     } catch (error) {
       this.logger.error(error);
       throw error;
@@ -78,9 +91,14 @@ export class PubSubService implements OnApplicationBootstrap, OnApplicationShutd
         // eslint-disable-next-line  @typescript-eslint/no-misused-promises
         subscription.on('message', async (message: Message) => {
           try {
-            const type = avsc.parse(config.schema) as avsc.Type;
-            const data = type.decode(message.data);
-            await instance[methodKey](data.value);
+            if (config.schema) {
+              const type = avsc.parse(config.schema) as avsc.Type;
+              const data = type.decode(message.data);
+              await instance[methodKey](data.value);
+            } else {
+              const data = JSON.parse(message.data.toString());
+              await instance[methodKey](data);
+            }
             message.ack();
           } catch (error) {
             this.logger.error(error);

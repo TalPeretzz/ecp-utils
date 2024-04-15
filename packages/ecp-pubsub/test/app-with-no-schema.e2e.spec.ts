@@ -1,12 +1,11 @@
-import { EventEnvelope } from '@elementor/example-schema';
 import { HttpStatus } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test } from '@nestjs/testing';
 import { setTimeout } from 'timers/promises';
-import { AppModule } from './mock-app/app.module';
-import { TestController } from './mock-app/test.controller';
+import { TestController } from './mock-app/app-with-no-schema-test.controller';
+import { AppModule } from './mock-app/app-with-no-schema.module';
 
-describe('End-to-end module testing by using mock application', () => {
+describe('End-to-end module testing by using mock app-with-no-schema', () => {
   let app: NestFastifyApplication;
 
   afterEach(() => {
@@ -27,7 +26,7 @@ describe('End-to-end module testing by using mock application', () => {
   });
 
   it('GET /', async () => {
-    const mySpy = jest.spyOn(TestController.prototype, 'handle').mockImplementation();
+    const mySpy = jest.spyOn(TestController.prototype, 'handleWithoutSchema').mockImplementation();
     const res = await app.inject({
       method: 'GET',
       url: '/',
@@ -37,26 +36,6 @@ describe('End-to-end module testing by using mock application', () => {
 
     await setTimeout(1000);
 
-    const event: EventEnvelope = {
-      metadata: {
-        eventName: 'CREATED',
-        eventId: 'id',
-        eventSource: 'test',
-        timestamp: 1713195615942,
-      },
-      example: {
-        billingInfo: {
-          billingId: 'id',
-          billingName: 'name',
-        },
-        description: 'description',
-        id: 'id',
-        name: 'name',
-        status: 'status',
-        createdBy: 'createdBy',
-      },
-    };
-
-    expect(mySpy).toHaveBeenCalledWith(event);
+    expect(mySpy).toHaveBeenCalledWith('I can be anything');
   });
 });

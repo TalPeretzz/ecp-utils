@@ -19,7 +19,7 @@ jobs:
     uses: elementor/elementor-cloud-github-actions/.github/workflows/monorepo-affected-packages.yaml@fix-affected
     with:
       event: 'release'
-      workflow_id: publish.yaml
+      workflow_id: 90966645
     secrets: inherit
 
   publish:

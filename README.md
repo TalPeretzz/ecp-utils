@@ -3,7 +3,7 @@
 This is a monorepo template that supports both NX or Lerna.
 
 ## Structure
-
+ 
 This repository is structured as a monorepo, meaning it hosts and manages multiple packages in the same repository. The packages are located under the `packages/` directory.
 
 ## Getting Started

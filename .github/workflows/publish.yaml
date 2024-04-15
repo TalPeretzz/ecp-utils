@@ -24,7 +24,7 @@ jobs:
 
   publish:
     needs: ["pre-job", "affected-packages"]
-    name: Publish
+    name: publish.yaml
     if: fromJson(needs.affected-packages.outputs.affected_projects).packages[0] != null
     strategy:
       matrix:

@@ -62,3 +62,13 @@ jobs:
       env:
         token: ${{ secrets.CLOUD_DEVOPS_TOKEN }}
         NODE_AUTH_TOKEN: ${{ secrets.CLOUD_DEVOPS_TOKEN }}
+        
+  post-job:
+    needs: ["pre-job", "affected-packages", "publish"]
+    if: always()
+    uses: elementor/elementor-cloud-github-actions/.github/workflows/microservice-post-job.yaml@master
+    with:
+      FAILED: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+      ENV: prod
+      VERSION: ${{ needs.pre-job.outputs.VERSION }}
+    secrets: inherit

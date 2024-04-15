@@ -48,7 +48,9 @@ jobs:
 
     - name: Install Deps
       run: npm install
-
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.CLOUD_DEVOPS_TOKEN }}
+        
     - name: Run Build
       run: npm run build
 

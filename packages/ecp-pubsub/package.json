@@ -22,7 +22,6 @@
     "typescript": "^5.3.2",
     "avsc": "^5.7.7",
     "@google-cloud/pubsub": "^4.3.3",
-    "@elementor/pubsub-avro-schema-poc": "^1.0.3",
     "testcontainers": "^10.3.2"
   },
   "peerDependencies": {

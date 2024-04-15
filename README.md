@@ -1,6 +1,6 @@
 # ecp-utils
 
-This is a monorepo template that supports both NX or Lerna.
+This is a monorepo template that supports both NX or Lerna. 
 
 ## Structure
  

@@ -29,6 +29,9 @@ package.name = '$FULL_PACKAGE_NAME';
 package.version = '0.0.0';
 package.repository = {type: 'git', url: 'https://github.com/elementor/ecp-utils.git'};
 package.publishConfig = {registry: 'https://npm.pkg.github.com/elementor'};
+package.files = ['dist'];
+package.main = 'dist/index.js';
+package.types = 'dist/index.d.ts';
 fs.writeFileSync('./package.json', JSON.stringify(package, null, 2));" > updatePackage.js
 
 # Run the JavaScript file

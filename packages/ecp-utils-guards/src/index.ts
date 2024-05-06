@@ -5,6 +5,7 @@ export * from './basic-guard/basic.constants';
 export * from './basic-guard/basic.guard';
 export * from './basic-guard/basic.guard.module';
 export * from './chain-guard/chain.guard';
+export * from './elementor-store/elementor-store.decorator';
 export * from './elementor-store/elementor-store.enum';
 export * from './elementor-store/elementor-store.guard';
 export * from './elementor-token/elementor-token-payload.decorator';

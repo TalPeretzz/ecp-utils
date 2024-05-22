@@ -10,7 +10,7 @@
     "@nestjs/testing": "^10.2.10",
     "@types/jest": "^29.5.10",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
-    "axios": "^1.6.2",
+    "axios": "^1.7.2",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.0.1",
@@ -38,10 +38,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/elementor/ecp-zuora-client.git"
+    "url": "git+https://github.com/elementor/ecp-utils.git"
   },
   "bugs": {
-    "url": "https://github.com/elementor/ecp-zuora-client/issues"
+    "url": "https://github.com/elementor/ecp-utils/issues"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@elementor"
@@ -80,8 +80,8 @@
     ],
     "*.js": "eslint --cache --fix"
   },
-  "homepage": "https://github.com/elementor/ecp-zuora-client#readme",
-  "version": "1.0.0",
+  "homepage": "https://github.com/elementor/ecp-utils#readme",
+  "version": "1.1.0",
   "author": "",
   "license": "ISC",
   "description": ""

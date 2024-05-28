@@ -61,7 +61,7 @@ export class LoggerUtils {
 
   public serializeResponse(res: pino.SerializedResponse) {
     return {
-      statusCode: res.statusCode,
+      statusCode: res.raw.statusCode,
     };
   }
 

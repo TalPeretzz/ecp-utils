@@ -1,0 +1,31 @@
+{
+  "name": "@elementor/ecp-utils-http-exception-filter",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rimraf -rf dist && tsc -p tsconfig.build.json",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"{src,test}/**/*.ts\" --fix",
+    "lint:ci": "eslint \"{src,test}/**/*.ts\"",
+    "test": "jest --coverage --detectOpenHandles"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elementor/ecp-utils.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/elementor"
+  },
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
+  "peerDependencies": {
+    "@nestjs/common": "10.x.x",
+    "@nestjs/core": "^10.x.x"
+  }
+}

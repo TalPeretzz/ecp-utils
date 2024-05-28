@@ -11,7 +11,7 @@ npm i @elementor/axios
 The module wraps @nestjs/axios module, so all config options
 you provide to the axios module are also valid here.
 
-```shell
+```typescript
 @Module({
   imports: [
     HttpModule.register({
@@ -25,7 +25,7 @@ export class CatsModule {}
 ```
 
 ## Async configuration
-```shell
+```typescript
 HttpModule.registerAsync({
   imports: [ConfigModule],
   useFactory: async (configService: ConfigService) => ({
@@ -38,7 +38,7 @@ HttpModule.registerAsync({
 
 Alternatively, you can configure the HttpModule using a class instead of a factory, as shown below.
 
-```shell
+```typescript
 HttpModule.registerAsync({
   useClass: HttpConfigService,
 });
@@ -46,7 +46,7 @@ HttpModule.registerAsync({
 
 The construction above instantiates HttpConfigService inside HttpModule, using it to create an options object. Note that in this example, the HttpConfigService has to implement HttpModuleOptionsFactory interface as shown below. The HttpModule will call the createHttpOptions() method on the instantiated object of the supplied class.
 
-```shell
+```typescript
 @Injectable()
 class HttpConfigService implements HttpModuleOptionsFactory {
   createHttpOptions(): HttpModuleOptions {

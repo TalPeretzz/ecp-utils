@@ -48,14 +48,18 @@ export class LoggerUtils {
     };
   }
 
-  public serializeRequest(req: pino.SerializedRequest) {
+  public serializeRequest(req: pino.SerializedRequest, headers: string[] = []) {
+    headers = [...headers, 'user-agent', 'cf-ipcountry'];
     return {
       id: req.id,
       method: req.method,
       url: req.url,
       ip: this.getClientIP(req),
       query: req.query,
-      'user-agent': req.headers['user-agent'],
+      headers: headers.reduce((acc, header) => {
+        acc[header] = req.headers[header];
+        return acc;
+      }, {}),
     };
   }
 

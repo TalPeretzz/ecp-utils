@@ -47,7 +47,7 @@ export class EcpHttpExceptionFilter extends BaseExceptionFilter {
     if (status < HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger[this.options.logSeverity ?? 'error'](exception);
     } else {
-      this.logger.error({ exception, shouldTriggerAlert: true });
+      this.logger.error({ err: exception, shouldTriggerAlert: true });
 
       if (this.options.sentryOptions) {
         Sentry.withScope((scope) => {

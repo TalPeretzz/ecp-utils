@@ -5,8 +5,8 @@ import { FastifyReply } from 'fastify';
 import { HttpExceptionModuleToken, HttpExceptionOptionsType } from './http-exception.module-definition';
 
 @Catch()
-export class HttpExceptionFilter extends BaseExceptionFilter {
-  private readonly logger = new Logger(HttpExceptionFilter.name);
+export class EcpHttpExceptionFilter extends BaseExceptionFilter {
+  private readonly logger = new Logger(EcpHttpExceptionFilter.name);
 
   constructor(@Inject(HttpExceptionModuleToken) private readonly options: HttpExceptionOptionsType) {
     super();
@@ -34,8 +34,6 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
   }
 
   catch(exception: unknown, host: ArgumentsHost) {
-    this.logger[this.options.logSeverity ?? 'error'](exception);
-
     if (host.getType() !== 'http') {
       return super.catch(exception, host);
     }
@@ -46,11 +44,17 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
     const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
     const exceptionResponse = exception instanceof HttpException ? exception.getResponse() : 'Internal Server Error';
 
-    if (status >= HttpStatus.INTERNAL_SERVER_ERROR && this.options.sentryOptions) {
-      Sentry.withScope((scope) => {
-        scope.setTag('traceId', traceId);
-        Sentry.captureException(exception);
-      });
+    if (status < HttpStatus.INTERNAL_SERVER_ERROR) {
+      this.logger[this.options.logSeverity ?? 'error'](exception);
+    } else {
+      this.logger.error({ exception, shouldTriggerAlert: true });
+
+      if (this.options.sentryOptions) {
+        Sentry.withScope((scope) => {
+          scope.setTag('traceId', traceId);
+          Sentry.captureException(exception);
+        });
+      }
     }
 
     return response.status(status).send(this.serializeResponse(exceptionResponse, status, traceId));

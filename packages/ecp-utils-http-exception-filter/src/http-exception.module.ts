@@ -1,6 +1,6 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
-import { HttpExceptionFilter } from './http-exception.filter';
+import { EcpHttpExceptionFilter } from './http-exception.filter';
 import {
   ConfigurableModuleClass,
   HttpExceptionAsyncOptionsType,
@@ -18,7 +18,7 @@ export class HttpExceptionModule extends ConfigurableModuleClass {
 
         {
           provide: APP_FILTER,
-          useClass: HttpExceptionFilter,
+          useClass: EcpHttpExceptionFilter,
         },
       ],
     };
@@ -40,7 +40,7 @@ export class HttpExceptionModule extends ConfigurableModuleClass {
       },
       {
         provide: APP_FILTER,
-        useClass: HttpExceptionFilter,
+        useClass: EcpHttpExceptionFilter,
       },
     ];
   }

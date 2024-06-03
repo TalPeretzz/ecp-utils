@@ -54,7 +54,7 @@ export class HttpService {
 
   onResponse(response: AxiosResponse): AxiosResponse {
     const logData = {
-      msg: 'Got HTTP response',
+      msg: 'Received HTTP response',
       response: response.data,
     };
     this.logger.debug(logData);
@@ -63,11 +63,12 @@ export class HttpService {
 
   onRequest(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
     const logData = {
-      msg: 'Performing HTTP request',
+      msg: 'Sending HTTP request',
       url: config.url,
       method: config.method,
       params: config.params,
       data: config.data,
+      headers: config.headers,
     };
 
     this.logger.debug(logData);

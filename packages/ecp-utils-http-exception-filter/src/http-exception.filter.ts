@@ -1,12 +1,20 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Inject, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpException, HttpStatus, Inject, Logger } from '@nestjs/common';
+import { BaseExceptionFilter } from '@nestjs/core';
+import * as Sentry from '@sentry/node';
 import { FastifyReply } from 'fastify';
 import { HttpExceptionModuleToken, HttpExceptionOptionsType } from './http-exception.module-definition';
 
-@Catch(HttpException)
-export class HttpExceptionFilter<T> implements ExceptionFilter {
+@Catch()
+export class HttpExceptionFilter extends BaseExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
 
-  constructor(@Inject(HttpExceptionModuleToken) private readonly options: HttpExceptionOptionsType) {}
+  constructor(@Inject(HttpExceptionModuleToken) private readonly options: HttpExceptionOptionsType) {
+    super();
+    if (this.options.sentryOptions) {
+      this.logger.debug(this.options.sentryOptions, 'Initializing Sentry');
+      Sentry.init(this.options.sentryOptions);
+    }
+  }
 
   serializeResponse(exceptionResponse: string | object, statusCode: number, traceId: string) {
     if (typeof exceptionResponse === 'string') {
@@ -25,21 +33,26 @@ export class HttpExceptionFilter<T> implements ExceptionFilter {
     }
   }
 
-  catch(exception: T, host: ArgumentsHost) {
+  catch(exception: unknown, host: ArgumentsHost) {
     this.logger[this.options.logSeverity ?? 'error'](exception);
+
+    if (host.getType() !== 'http') {
+      return super.catch(exception, host);
+    }
 
     const response = host.switchToHttp().getResponse<FastifyReply>();
     const traceId = response.getHeader(this.options.traceIdHeader) as string;
 
-    if (exception instanceof HttpException) {
-      const exceptionResponse = exception.getResponse();
-      return response
-        .status(exception.getStatus())
-        .send(this.serializeResponse(exceptionResponse, exception.getStatus(), traceId));
+    const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+    const exceptionResponse = exception instanceof HttpException ? exception.getResponse() : 'Internal Server Error';
+
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR && this.options.sentryOptions) {
+      Sentry.withScope((scope) => {
+        scope.setTag('traceId', traceId);
+        Sentry.captureException(exception);
+      });
     }
 
-    return response
-      .status(HttpStatus.INTERNAL_SERVER_ERROR)
-      .send(this.serializeResponse('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR, traceId));
+    return response.status(status).send(this.serializeResponse(exceptionResponse, status, traceId));
   }
 }

@@ -44,7 +44,7 @@ export class EcpHttpExceptionFilter extends BaseExceptionFilter {
     const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
     const exceptionResponse = exception instanceof HttpException ? exception.getResponse() : 'Internal Server Error';
 
-    if (status < HttpStatus.INTERNAL_SERVER_ERROR) {
+    if (exception instanceof HttpException) {
       this.logger[this.options.logSeverity ?? 'error'](exception);
     } else {
       this.logger.error({ err: exception, shouldTriggerAlert: true });

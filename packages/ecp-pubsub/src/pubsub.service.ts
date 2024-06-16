@@ -52,6 +52,9 @@ export class PubSubService implements OnApplicationBootstrap, OnApplicationShutd
       projectId: this.options.projectId,
     });
 
+    // Default to true, so that the message is acknowledged automatically
+    const autoAck = this.options.autoAck ?? true;
+
     if (this.options.init) {
       const [topic] = await this.pubsub.createTopic(this.options.init.topic);
       await topic.createSubscription(this.options.init.subscription);
@@ -94,15 +97,19 @@ export class PubSubService implements OnApplicationBootstrap, OnApplicationShutd
             if (config.schema) {
               const type = avsc.parse(config.schema) as avsc.Type;
               const data = type.decode(message.data);
-              await instance[methodKey](data.value);
+              await instance[methodKey](data.value, message);
             } else {
               const data = JSON.parse(message.data.toString());
-              await instance[methodKey](data);
+              await instance[methodKey](data, message);
             }
-            message.ack();
+            if (autoAck) {
+              message.ack();
+            }
           } catch (error) {
             this.logger.error(error);
-            message.nack();
+            if (autoAck) {
+              message.nack();
+            }
           }
         });
       });

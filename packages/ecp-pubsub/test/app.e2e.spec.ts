@@ -57,6 +57,6 @@ describe('End-to-end module testing by using mock application', () => {
       },
     };
 
-    expect(mySpy).toHaveBeenCalledWith(event);
+    expect(mySpy).toHaveBeenCalledWith(event, expect.anything());
   });
 });

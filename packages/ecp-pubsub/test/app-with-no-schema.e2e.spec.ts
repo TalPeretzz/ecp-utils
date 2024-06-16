@@ -36,6 +36,6 @@ describe('End-to-end module testing by using mock app-with-no-schema', () => {
 
     await setTimeout(1000);
 
-    expect(mySpy).toHaveBeenCalledWith('I can be anything');
+    expect(mySpy).toHaveBeenCalledWith('I can be anything', expect.anything());
   });
 });

@@ -27,6 +27,7 @@ import { TestController } from './test.controller';
         return {
           projectId: config.get('pubsubProjectId', { infer: true }),
           apiEndpoint: config.get('pubsubEndpoint', { infer: true }),
+          autoAck: true, // default is true, if false you should call ack and nack manually
         };
       },
     }),
@@ -91,6 +92,7 @@ The handler decorator expects schema and subscription name configuration.
 import { PubsubMessageHandler } from '@elementor/ecp-pubsub';
 import { PubsubController } from '@elementor/ecp-pubsub';
 import { PocV1 } from "@elementor/pubsub-avro-schema-poc";
+import { Message } from '@google-cloud/pubsub';
 
 @PubsubController
 export class TestController {
@@ -98,7 +100,10 @@ export class TestController {
     subscription: 'mysubscription',
     schema: PocV1.EventEnvelopeSchema,
   })
-  handle(data: PocV1.EventEnvelope) {
+  handle(data: PocV1.EventEnvelope, message: Message) {
+    console.log(
+      `Received message: ${message.id}, Published at: ${message.publishTime}, delivery attempt: ${message.deliveryAttempt}`,
+    );
     console.log('From Pubsub Controller');
     console.log(`\tData: ${data}`);
   }

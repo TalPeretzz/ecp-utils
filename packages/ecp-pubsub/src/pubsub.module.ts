@@ -1,11 +1,16 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { PubSubService } from './pubsub.service';
 import { DiscoveryModule } from '@nestjs/core';
 import { PUBSUB_MODULE_OPTIONS_TOKEN } from './pubsub.constants';
+import { PubSubService } from './pubsub.service';
 
 export interface PubSubModuleOptions {
   projectId?: string;
   apiEndpoint?: string;
+  /**
+   * If `false`, manual acknowledgment mode enabled
+   * @default true
+   */
+  autoAck?: boolean;
   init?: {
     topic: string;
     subscription: string;

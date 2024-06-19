@@ -1,6 +1,7 @@
-import { Inject, Injectable, NestMiddleware, RequestMethod } from '@nestjs/common';
+import { ControllerOptions, Inject, Injectable, NestMiddleware, RequestMethod } from '@nestjs/common';
 import { METHOD_METADATA, PATH_METADATA, VERSION_METADATA } from '@nestjs/common/constants';
 import { ApplicationConfig, DiscoveryService, Reflector } from '@nestjs/core';
+import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { Histogram } from 'prom-client';
 import { HttpMetricsModuleToken } from './http-metrics.module-definition';
@@ -48,25 +49,79 @@ export class HttpMetricsMiddleware implements NestMiddleware {
     controllers.forEach((wrapper) => {
       const { instance } = wrapper;
       if (instance) {
-        const controllerPath = this.reflector.get<string>(PATH_METADATA, instance.constructor);
-        const version = this.reflector.get<string>(VERSION_METADATA, instance.constructor);
-        const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
-        methods.forEach((methodName) => {
-          const methodHandler = instance[methodName];
-          const methodPath = this.reflector.get<string>(PATH_METADATA, methodHandler);
-          const requestMethod = this.reflector.get<RequestMethod>(METHOD_METADATA, methodHandler);
-          const method = RequestMethod[requestMethod];
-          if (method) {
-            endpoints.push(this.formatEndpoint(version, controllerPath, methodPath));
+        const version = this.reflector.get<ControllerOptions['version']>(VERSION_METADATA, instance.constructor);
+
+        if (typeof version === 'symbol' || (Array.isArray(version) && version.some((v) => typeof v === 'symbol'))) {
+          throw new Error('Version must be a string or an array of strings');
+        }
+
+        if (Array.isArray(version)) {
+          for (const v of version) {
+            endpoints.push(...this.getVersionEndpoints(instance, v as string));
           }
-        });
+        } else {
+          endpoints.push(...this.getVersionEndpoints(instance, version));
+        }
       }
     });
 
     return endpoints;
   }
 
-  private formatEndpoint(version: string, controllerPath: string, methodPath: string) {
+  private getVersionEndpoints(instance: InstanceWrapper['instance'], version?: string) {
+    const endpoints = [] as string[];
+    const controllerPath = this.reflector.get<ControllerOptions['path']>(PATH_METADATA, instance.constructor);
+
+    if (Array.isArray(controllerPath)) {
+      for (const path of controllerPath) {
+        endpoints.push(...this.getControllerEndpoint(path, instance, version));
+      }
+    } else if (typeof controllerPath === 'string') {
+      endpoints.push(...this.getControllerEndpoint(controllerPath, instance, version));
+    }
+
+    return endpoints;
+  }
+
+  private getControllerEndpoint(controllerPath: string, instance: InstanceWrapper['instance'], version?: string) {
+    const endpoints = [] as string[];
+    const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(instance));
+    methods.forEach((methodName) => {
+      const methodHandler = instance[methodName];
+      const methodPath = this.reflector.get<string | string[]>(PATH_METADATA, methodHandler);
+
+      if (Array.isArray(methodPath)) {
+        for (const mp of methodPath) {
+          const endpoint = this.getMethodEndpoint(controllerPath, mp, methodHandler, version);
+          if (endpoint) {
+            endpoints.push(endpoint);
+          }
+        }
+      } else {
+        const endpoint = this.getMethodEndpoint(controllerPath, methodPath, methodHandler, version);
+        if (endpoint) {
+          endpoints.push(endpoint);
+        }
+      }
+    });
+
+    return endpoints;
+  }
+
+  private getMethodEndpoint(
+    controllerPath: string,
+    methodPath: string,
+    methodHandler: () => unknown,
+    version?: string,
+  ) {
+    const requestMethod = this.reflector.get<RequestMethod>(METHOD_METADATA, methodHandler);
+    const method = RequestMethod[requestMethod];
+    if (method) {
+      return this.formatEndpoint(controllerPath, methodPath, version);
+    }
+  }
+
+  private formatEndpoint(controllerPath: string, methodPath: string, version?: string) {
     const formattedControllerPath = controllerPath.startsWith('/') ? controllerPath : `/${controllerPath}`;
     const formattedMethodPath = methodPath.replace(/^\/|\/$/g, '');
     const globalPrefix = this.appConfig.getGlobalPrefix();

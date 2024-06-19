@@ -5,7 +5,7 @@
 ## Installation
 
 ```bash
-npm @elementor/install ecp-utils-logger
+npm i @elementor/ecp-utils-logger
 ```
 
 ## How to use

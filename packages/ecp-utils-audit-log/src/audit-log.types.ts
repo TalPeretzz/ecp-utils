@@ -11,6 +11,6 @@ export type AuditLogMessage = {
   };
   details: {
     message: string;
-    additionalData?: Record<string, unknown>;
+    additionalData?: Record<string, any>;
   };
 };

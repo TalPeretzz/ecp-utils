@@ -9,5 +9,8 @@ export type AuditLogMessage = {
     type: 'user' | 'system';
     id: string;
   };
-  details?: Record<string, unknown> | string;
+  details: {
+    message: string;
+    additionalData?: Record<string, unknown>;
+  };
 };

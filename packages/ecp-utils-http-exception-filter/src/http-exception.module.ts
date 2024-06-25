@@ -1,5 +1,6 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
+import { Counter } from 'prom-client';
 import { EcpHttpExceptionFilter } from './http-exception.filter';
 import {
   ConfigurableModuleClass,
@@ -8,6 +9,12 @@ import {
   HttpExceptionOptionsType,
 } from './http-exception.module-definition';
 
+const unhandledExceptionsCounter = new Counter({
+  name: 'ecp_unhandled_exceptions_count',
+  help: 'Total number of unhandled exceptions in the application',
+  labelNames: ['method', 'route', 'status_code', 'service'],
+});
+
 @Module({})
 export class HttpExceptionModule extends ConfigurableModuleClass {
   static register(options: HttpExceptionOptionsType): DynamicModule {
@@ -15,10 +22,13 @@ export class HttpExceptionModule extends ConfigurableModuleClass {
       module: HttpExceptionModule,
       providers: [
         { provide: HttpExceptionModuleToken, useValue: options },
-
         {
           provide: APP_FILTER,
           useClass: EcpHttpExceptionFilter,
+        },
+        {
+          provide: Counter,
+          useValue: unhandledExceptionsCounter,
         },
       ],
     };
@@ -41,6 +51,10 @@ export class HttpExceptionModule extends ConfigurableModuleClass {
       {
         provide: APP_FILTER,
         useClass: EcpHttpExceptionFilter,
+      },
+      {
+        provide: Counter,
+        useValue: unhandledExceptionsCounter,
       },
     ];
   }

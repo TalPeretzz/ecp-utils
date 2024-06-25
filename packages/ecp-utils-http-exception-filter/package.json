@@ -28,6 +28,7 @@
     "@nestjs/common": "10.x.x",
     "@nestjs/core": "^10.x.x",
     "@sentry/node": "^8.7.0",
-    "@sentry/profiling-node": "^8.7.0"
+    "@sentry/profiling-node": "^8.7.0",
+    "prom-client": "^15.x.x"
   }
 }

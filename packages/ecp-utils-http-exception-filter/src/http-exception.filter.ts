@@ -2,13 +2,17 @@ import { ArgumentsHost, Catch, HttpException, HttpStatus, Inject, Logger } from 
 import { BaseExceptionFilter } from '@nestjs/core';
 import * as Sentry from '@sentry/node';
 import { FastifyReply } from 'fastify';
+import { Counter } from 'prom-client';
 import { HttpExceptionModuleToken, HttpExceptionOptionsType } from './http-exception.module-definition';
 
 @Catch()
 export class EcpHttpExceptionFilter extends BaseExceptionFilter {
   private readonly logger = new Logger(EcpHttpExceptionFilter.name);
 
-  constructor(@Inject(HttpExceptionModuleToken) private readonly options: HttpExceptionOptionsType) {
+  constructor(
+    @Inject(HttpExceptionModuleToken) private readonly options: HttpExceptionOptionsType,
+    private readonly httpUnhandledExceptionsCounter: Counter,
+  ) {
     super();
     if (this.options.sentryOptions) {
       this.logger.debug(this.options.sentryOptions, 'Initializing Sentry');
@@ -48,6 +52,14 @@ export class EcpHttpExceptionFilter extends BaseExceptionFilter {
       this.logger[this.options.logSeverity ?? 'error'](exception);
     } else {
       this.logger.error({ err: exception, shouldTriggerAlert: true });
+
+      // TODO: replace response.context.config with Reply#routeOptions#config
+      this.httpUnhandledExceptionsCounter.inc({
+        method: response.context.config.method as string,
+        route: response.context.config.url,
+        status_code: status,
+        service: this.options.service,
+      });
 
       if (this.options.sentryOptions) {
         Sentry.withScope((scope) => {

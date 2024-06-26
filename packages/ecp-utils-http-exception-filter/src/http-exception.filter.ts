@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, HttpException, HttpStatus, Inject, Logger } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import * as Sentry from '@sentry/node';
-import { FastifyReply } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { Counter } from 'prom-client';
 import { HttpExceptionModuleToken, HttpExceptionOptionsType } from './http-exception.module-definition';
 
@@ -42,6 +42,7 @@ export class EcpHttpExceptionFilter extends BaseExceptionFilter {
       return super.catch(exception, host);
     }
 
+    const request = host.switchToHttp().getRequest<FastifyRequest>();
     const response = host.switchToHttp().getResponse<FastifyReply>();
     const traceId = response.getHeader(this.options.traceIdHeader) as string;
 
@@ -53,10 +54,9 @@ export class EcpHttpExceptionFilter extends BaseExceptionFilter {
     } else {
       this.logger.error({ err: exception, shouldTriggerAlert: true });
 
-      // TODO: replace response.context.config with Reply#routeOptions#config
       this.httpUnhandledExceptionsCounter.inc({
-        method: response.context.config.method as string,
-        route: response.context.config.url,
+        method: request.method,
+        route: request.routeConfig.url,
         status_code: status,
         service: this.options.service,
       });

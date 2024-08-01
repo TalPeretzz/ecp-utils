@@ -1,0 +1,27 @@
+{
+  "name": "@elementor/ecp-utils-common",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rimraf -rf dist && tsc -p tsconfig.build.json",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"{src,test}/**/*.ts\" --fix",
+    "lint:ci": "eslint \"{src,test}/**/*.ts\"",
+    "test": "jest --coverage --detectOpenHandles"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elementor/ecp-utils.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/elementor"
+  },
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts"
+}
